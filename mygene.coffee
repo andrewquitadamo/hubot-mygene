@@ -16,7 +16,7 @@ module.exports = (robot) ->
     msg.send "#{mygenequery}"
     request mygenequery, (error, response, body) ->
       if error?
-        msg.send(error)
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
       else
         hits = JSON.parse(body)['hits']
         res = ""
