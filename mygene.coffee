@@ -18,10 +18,10 @@ module.exports = (robot) ->
         msg.send "Uh-oh. Something has gone wrong\n#{error}"
       else
         hits = JSON.parse(body)['hits']
-        res = ""
+        response = ""
         for hit in hits
-          res += "ID: #{hit.entrezgene}\nName: #{hit.name}\nSymbol\n#{hit.symbol}\n-----\n"
-        msg.send "#{res}"
+          response += "ID: #{hit.entrezgene}\nName: #{hit.name}\nSymbol\n#{hit.symbol}\n-----\n"
+        msg.send "#{resonse}"
 
   robot.respond /get gene position ([0-9]+)/i, (msg) ->
     geneID = msg.match[1]
