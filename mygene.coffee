@@ -21,7 +21,7 @@ module.exports = (robot) ->
         response = ""
         for hit in hits
           response += "ID: #{hit.entrezgene}\nName: #{hit.name}\nSymbol\n#{hit.symbol}\n-----\n"
-        msg.send "#{resonse}"
+        msg.send "#{response}"
 
   robot.respond /get gene position ([0-9]+)/i, (msg) ->
     geneID = msg.match[1]
@@ -29,6 +29,10 @@ module.exports = (robot) ->
     request mygenequery, (error, response, body) ->
       if error?
         msg.send "Uh-oh. Something has gone wrong\n#{error}"
+        return
       else
         pos = JSON.parse(body)['genomic_pos_hg19']
-        msg.send "chr: #{pos.chr}\nstart: #{pos.start}\nend: #{pos.end}\nstrand: #{pos.strand}"
+        if pos?
+          msg.send "chr: #{pos.chr}\nstart: #{pos.start}\nend: #{pos.end}\nstrand: #{pos.strand}"
+        else
+          msg.send "There doesn't seem to be any position information"
