@@ -1,5 +1,7 @@
 # Commands:
-#   hubot find gene <query>  - Returns ID, Name and Symbol of genes matching query
+#   hubot find gene <query> - Returns ID, Name and Symbol of genes matching query
+#   hubot get gene position <gene ID> - Returns genomic position for gene ID. Position in HG19. 
+#   hubot get gene summary <gene ID> - Returns summary of gene
 # 
 # Dependencies:
 #   "request" : "*"
