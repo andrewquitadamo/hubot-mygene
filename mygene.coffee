@@ -51,3 +51,34 @@ module.exports = (robot) ->
           msg.send "#{summary}"
         else
           msg.send "There doesn't seem to be a summary for gene #{geneID}"
+
+  pattern = new RegExp('get gene refs ([0-9]+)' +
+                       "(?: from ([0-9]+))?" +
+                       "(?: to ([0-9]+))?", 'i')
+  robot.respond pattern, (msg) ->
+    geneID = msg.match[1]
+    start = msg.match[2]
+    end = msg.match[3]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=generif'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        refs = JSON.parse(body)['generif']
+        refLength = refs.length
+        if start? and end?
+          if end-start > 100
+            msg.send "Woah, slow down there partner. Try a range less than 100"
+            return
+          results = refs.slice(parseInt(start)-1,parseInt(end))
+          response = ""
+          for ref in results 
+            response += "#{ref.text}+\nhttp://www.ncbi.nlm.nih.gov/pubmed/#{ref.pubmed}\n\n"
+          msg.send "#{response}" 
+        else
+          msg.send "10 of #{refLength} references"
+          firstTen = refs.slice(0,10)
+          response = ""
+          for ref in firstTen
+            response += "#{ref.text}+\nhttp://www.ncbi.nlm.nih.gov/pubmed/#{ref.pubmed}\n\n"
+          msg.send "#{response}"
