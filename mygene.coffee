@@ -105,3 +105,16 @@ module.exports = (robot) ->
       else
         gene = JSON.parse(body)['ensembl.gene']
         msg.send "#{gene}"
+
+  robot.respond /get ensembl proteins ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=ensembl.protein'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        proteins = JSON.parse(body)['ensembl.protein']
+        response = ""
+        for protein in proteins
+          response += "#{protein}\n"
+        msg.send "#{response}"
