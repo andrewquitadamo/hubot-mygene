@@ -2,6 +2,9 @@
 #   hubot find gene <query> - Returns ID, Name and Symbol of genes matching query
 #   hubot get gene position <gene ID> - Returns genomic position for gene ID. Position in HG19. 
 #   hubot get gene summary <gene ID> - Returns summary of gene
+#   hubot get ensembl gene <gene ID> - Returns Ensembl gene ID for gene
+#   hubot get ensembl transcripts <gene ID> - Returns Ensembl transcript IDs for gene
+#   hubot get ensembl proteins <gene ID> - Return Ensembl protein IDs for gene
 # 
 # Dependencies:
 #   "request" : "*"
