@@ -121,3 +121,42 @@ module.exports = (robot) ->
         for protein in proteins
           response += "#{protein}\n"
         msg.send "#{response}"
+
+  robot.respond /get refseq rna ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=refseq.rna'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        ids = JSON.parse(body)['refseq.rna']
+        response = ""
+        for id in ids
+          response += "#{id}\n"
+        msg.send "#{response}"
+
+  robot.respond /get refseq genomic ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=refseq.genomic'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        ids = JSON.parse(body)['refseq.genomic']
+        response = ""
+        for id in ids
+          response += "#{id}\n"
+        msg.send "#{response}"
+
+  robot.respond /get refseq protein ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=refseq.protein'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        ids = JSON.parse(body)['refseq.protein']
+        response = ""
+        for id in ids
+          response += "#{id}\n"
+        msg.send "#{response}"
