@@ -5,6 +5,9 @@
 #   hubot get ensembl gene <gene ID> - Returns Ensembl gene ID for gene
 #   hubot get ensembl transcripts <gene ID> - Returns Ensembl transcript IDs for gene
 #   hubot get ensembl proteins <gene ID> - Return Ensembl protein IDs for gene
+#   hubot get refseq genomic <gene ID> - Returns RefSeq gene IDs for gene
+#   hubot get refseq rna <gene ID> - Returns RefSeq rna IDs for gene
+#   hubot get refseq protein <gene ID> - Returns RefSeq protein IDs for gene
 # 
 # Dependencies:
 #   "request" : "*"
