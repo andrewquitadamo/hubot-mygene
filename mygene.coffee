@@ -91,8 +91,17 @@ module.exports = (robot) ->
         msg.send "Uh-oh. Something has gone wrong\n#{error}"
       else
         transcripts = JSON.parse(body)['ensembl.transcript']
-        msg.send "#{transcripts}"
         response = ""
         for transcript in transcripts
           response += "#{transcript}\n"
         msg.send "#{response}"
+
+  robot.respond /get ensembl gene ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=ensembl.gene'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        gene = JSON.parse(body)['ensembl.gene']
+        msg.send "#{gene}"
