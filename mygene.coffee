@@ -99,7 +99,7 @@ module.exports = (robot) ->
         transcripts = JSON.parse(body)['ensembl.transcript']
         response = ""
         for transcript in transcripts
-          response += "#{transcript}\n"
+          response += "#{transcript}\thttp://www.ensembl.org/Homo_sapiens/Transcript/Summary?t=#{transcript}\n"
         msg.send "#{response}"
 
   robot.respond /get ensembl gene ([0-9]+)/i, (msg) ->
@@ -110,7 +110,7 @@ module.exports = (robot) ->
         msg.send "Uh-oh. Something has gone wrong\n#{error}"
       else
         gene = JSON.parse(body)['ensembl.gene']
-        msg.send "#{gene}"
+        msg.send "#{gene}\thttp://www.ensembl.org/Homo_sapiens/Gene/Summary?g=#{gene}"
 
   robot.respond /get ensembl proteins ([0-9]+)/i, (msg) ->
     geneID = msg.match[1]
@@ -135,7 +135,7 @@ module.exports = (robot) ->
         ids = JSON.parse(body)['refseq.rna']
         response = ""
         for id in ids
-          response += "#{id}\n"
+          response += "#{id}\thttp://www.ncbi.nlm.nih.gov/nuccore/#{id}\n"
         msg.send "#{response}"
 
   robot.respond /get refseq genomic ([0-9]+)/i, (msg) ->
@@ -148,7 +148,7 @@ module.exports = (robot) ->
         ids = JSON.parse(body)['refseq.genomic']
         response = ""
         for id in ids
-          response += "#{id}\n"
+          response += "#{id}\thttp://www.ncbi.nlm.nih.gov/nuccore/#{id}\n"
         msg.send "#{response}"
 
   robot.respond /get refseq protein ([0-9]+)/i, (msg) ->
@@ -161,5 +161,5 @@ module.exports = (robot) ->
         ids = JSON.parse(body)['refseq.protein']
         response = ""
         for id in ids
-          response += "#{id}\n"
+          response += "#{id}\thttp://www.ncbi.nlm.nih.gov/protein/#{id}\n"
         msg.send "#{response}"
