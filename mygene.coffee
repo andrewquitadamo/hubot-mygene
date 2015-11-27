@@ -8,6 +8,7 @@
 #   hubot get refseq genomic <gene ID> - Returns RefSeq gene IDs for gene
 #   hubot get refseq rna <gene ID> - Returns RefSeq rna IDs for gene
 #   hubot get refseq protein <gene ID> - Returns RefSeq protein IDs for gene
+#   hubot get pdb <gene ID> - Returns PDB entries for gene
 # 
 # Dependencies:
 #   "request" : "*"
@@ -162,4 +163,17 @@ module.exports = (robot) ->
         response = ""
         for id in ids
           response += "#{id}\thttp://www.ncbi.nlm.nih.gov/protein/#{id}\n"
+        msg.send "#{response}"
+
+  robot.respond /get pdb ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=pdb'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        ids = JSON.parse(body)['pdb']
+        response = ""
+        for id in ids
+          response += "#{id}\thttp://www.rcsb.org/pdb/explore.do?structureId=#{id}\n"
         msg.send "#{response}"
