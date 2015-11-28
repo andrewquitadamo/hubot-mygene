@@ -15,6 +15,7 @@
 #   hubot get hprd <gene ID> - Returns Human Protein Reference Database entry for gene
 #   hubot get hgnc <gene ID> - Returns HUGO Gene Nomenclature Committee entry for gene
 #   hubot get alias <gene ID> - Returns aliases for gene
+#   hubot get homologene <gene ID> - Returns HomoloGene entry for gene
 #
 #
 # Dependencies:
@@ -253,3 +254,13 @@ module.exports = (robot) ->
         for id in ids
           response += "#{id}\n"
         msg.send "#{response}"
+
+  robot.respond /get homologene ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=homologene'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        id = JSON.parse(body)['homologene']
+        msg.send "#{id.id}\thttp://www.ncbi.nlm.nih.gov/homologene/#{id.id}"
