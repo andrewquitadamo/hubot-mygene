@@ -9,7 +9,11 @@
 #   hubot get refseq rna <gene ID> - Returns RefSeq rna IDs for gene
 #   hubot get refseq protein <gene ID> - Returns RefSeq protein IDs for gene
 #   hubot get pdb <gene ID> - Returns PDB entries for gene
-# 
+#   hubot get pfam <gene ID> - Returns PFAM entries for gene 
+#   hubot get kegg <gene ID> - Returns KEGG entries for gene
+#   hubot get map location <gene ID> - Returns chromosomal map location for gene
+#
+#
 # Dependencies:
 #   "request" : "*"
 #
@@ -177,3 +181,39 @@ module.exports = (robot) ->
         for id in ids
           response += "#{id}\thttp://www.rcsb.org/pdb/explore.do?structureId=#{id}\n"
         msg.send "#{response}"
+
+  robot.respond /get pfam ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=pfam'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        ids = JSON.parse(body)['pfam']
+        response = ""
+        for id in ids
+          response += "#{id}\thttp://pfam.xfam.org/family/#{id}\n"
+        msg.send "#{response}"
+
+  robot.respond /get kegg ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=pathway.kegg'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        ids = JSON.parse(body)['pathway.kegg']
+        response = ""
+        for id in ids
+          response += "#{id.name}\thttp://www.genome.jp/dbget-bin/www_bget?#{id.id}\n"
+        msg.send "#{response}"
+
+  robot.respond /get map location ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=map_location'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        id = JSON.parse(body)['map_location']
+        msg.send "#{id}"
