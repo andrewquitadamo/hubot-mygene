@@ -12,6 +12,7 @@
 #   hubot get pfam <gene ID> - Returns PFAM entries for gene 
 #   hubot get kegg <gene ID> - Returns KEGG entries for gene
 #   hubot get map location <gene ID> - Returns chromosomal map location for gene
+#   hubot get hprd <gene ID> - Returns Human Protein Reference Database entry for gene
 #
 #
 # Dependencies:
@@ -217,3 +218,13 @@ module.exports = (robot) ->
       else
         id = JSON.parse(body)['map_location']
         msg.send "#{id}"
+
+  robot.respond /get hprd ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=HPRD'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        id = JSON.parse(body)['HPRD']
+        msg.send "#{id}\twww.hprd.org/protein/#{id}"
