@@ -14,6 +14,7 @@
 #   hubot get map location <gene ID> - Returns chromosomal map location for gene
 #   hubot get hprd <gene ID> - Returns Human Protein Reference Database entry for gene
 #   hubot get hgnc <gene ID> - Returns HUGO Gene Nomenclature Committee entry for gene
+#   hubot get alias <gene ID> - Returns aliases for gene
 #
 #
 # Dependencies:
@@ -239,3 +240,16 @@ module.exports = (robot) ->
       else
         id = JSON.parse(body)['HGNC']
         msg.send "#{id}\thttp://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=#{id}"
+
+  robot.respond /get alias ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=alias'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        ids = JSON.parse(body)['alias']
+        response = ""
+        for id in ids
+          response += "#{id}\n"
+        msg.send "#{response}"
