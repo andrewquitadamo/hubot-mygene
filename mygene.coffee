@@ -16,6 +16,7 @@
 #   hubot get hgnc <gene ID> - Returns HUGO Gene Nomenclature Committee entry for gene
 #   hubot get alias <gene ID> - Returns aliases for gene
 #   hubot get homologene <gene ID> - Returns HomoloGene entry for gene
+#   hubot get interpro <gene ID> - Returns InterPro entries for gene
 #
 #
 # Dependencies:
@@ -264,3 +265,16 @@ module.exports = (robot) ->
       else
         id = JSON.parse(body)['homologene']
         msg.send "#{id.id}\thttp://www.ncbi.nlm.nih.gov/homologene/#{id.id}"
+
+  robot.respond /get interpro ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=interpro'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        ids = JSON.parse(body)['interpro']
+        response = ""
+        for id in ids
+          response += "#{id.desc}\thttp://www.ebi.ac.uk/interpro/entry/#{id.id}\n"
+        msg.send "#{response}"
