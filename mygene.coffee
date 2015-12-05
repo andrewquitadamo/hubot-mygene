@@ -278,3 +278,13 @@ module.exports = (robot) ->
         for id in ids
           response += "#{id.desc}\thttp://www.ebi.ac.uk/interpro/entry/#{id.id}\n"
         msg.send "#{response}"
+
+  robot.respond /get omim ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=MIM'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        id = JSON.parse(body)['MIM']
+        msg.send "#{id}\thttp://www.omim.org/entry/#{id}"
