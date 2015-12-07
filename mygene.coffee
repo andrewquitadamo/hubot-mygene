@@ -17,6 +17,7 @@
 #   hubot get alias <gene ID> - Returns aliases for gene
 #   hubot get homologene <gene ID> - Returns HomoloGene entry for gene
 #   hubot get interpro <gene ID> - Returns InterPro entries for gene
+#   hubot get omim <gene ID> - Returns OMIM entry for gene
 #
 #
 # Dependencies:
