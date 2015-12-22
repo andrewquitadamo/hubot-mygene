@@ -18,6 +18,7 @@
 #   hubot get homologene <gene ID> - Returns HomoloGene entry for gene
 #   hubot get interpro <gene ID> - Returns InterPro entries for gene
 #   hubot get omim <gene ID> - Returns OMIM entry for gene
+#   hubot get wikipathways <gene ID> - Returns wikipathway entries for gene
 #
 #
 # Dependencies:
@@ -289,3 +290,16 @@ module.exports = (robot) ->
       else
         id = JSON.parse(body)['MIM']
         msg.send "#{id}\thttp://www.omim.org/entry/#{id}"
+
+  robot.respond /get wikipathways ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=pathway.wikipathways'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        ids = JSON.parse(body)['pathway.wikipathways']
+        response = ""
+        for id in ids
+          response += "#{id.name}\thttp://www.wikipathways.org/index.php/Pathway:#{id.id}\n"
+        msg.send "#{response}"
