@@ -20,6 +20,7 @@
 #   hubot get omim <gene ID> - Returns OMIM entry for gene
 #   hubot get wikipathways <gene ID> - Returns wikipathway entries for gene
 #   hubot get reactome <gene ID> - Returns Reactome entries for gene
+#   hubot get smpdb <gene ID> - Returns SMPDB entries for gene
 #
 #
 # Dependencies:
@@ -316,4 +317,17 @@ module.exports = (robot) ->
         response = ""
         for id in ids
           response += "#{id.name}\t#{id.id}\n"
+        msg.send "#{response}"
+
+  robot.respond /get smpdb ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=pathway.smpdb'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        ids = JSON.parse(body)['pathway.smpdb']
+        response = ""
+        for id in ids
+          response += "#{id.name}\thttp://smpdb.ca/view/#{id.id}\n"
         msg.send "#{response}"
