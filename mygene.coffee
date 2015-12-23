@@ -22,6 +22,7 @@
 #   hubot get reactome <gene ID> - Returns Reactome entries for gene
 #   hubot get smpdb <gene ID> - Returns SMPDB entries for gene
 #   hubot get pid <gene ID> - Returns PID entries for gene
+#   hubot get gene type <gene ID> - Returns type of gene
 #
 #
 # Dependencies:
@@ -345,3 +346,13 @@ module.exports = (robot) ->
         for id in ids
           response += "#{id.name}\thttp://pid.nci.nih.gov/search/pathway_landing.shtml?what=graphic&jpg=on&pathway_id=#{id.id}\n"
         msg.send "#{response}"
+
+  robot.respond /get gene type ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=type_of_gene'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        type = JSON.parse(body)['type_of_gene']
+        msg.send "#{type}"
