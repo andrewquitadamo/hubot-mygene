@@ -356,3 +356,13 @@ module.exports = (robot) ->
       else
         type = JSON.parse(body)['type_of_gene']
         msg.send "#{type}"
+
+  robot.respond /get swiss-prot ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=uniprot.Swiss-Prot'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        id = JSON.parse(body)['uniprot.Swiss-Prot']
+        msg.send "#{id}\thttp://www.uniprot.org/uniprot/#{id}"
