@@ -23,6 +23,8 @@
 #   hubot get smpdb <gene ID> - Returns SMPDB entries for gene
 #   hubot get pid <gene ID> - Returns PID entries for gene
 #   hubot get gene type <gene ID> - Returns type of gene
+#   hubot get swiss-prot <gene ID> - Returns Swiss-Prot entry for gene
+#   hubot get trembl <gene ID> - Returns TrEMBL entries for gene
 #
 #
 # Dependencies:
@@ -366,3 +368,16 @@ module.exports = (robot) ->
       else
         id = JSON.parse(body)['uniprot.Swiss-Prot']
         msg.send "#{id}\thttp://www.uniprot.org/uniprot/#{id}"
+
+  robot.respond /get trembl ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=uniprot.TrEMBL'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        ids = JSON.parse(body)['uniprot.TrEMBL']
+        response = ""
+        for id in ids
+          response += "#{id}\thttp://www.uniprot.org/uniprot/#{id}\n"
+        msg.send "#{response}"
