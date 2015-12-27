@@ -25,6 +25,7 @@
 #   hubot get gene type <gene ID> - Returns type of gene
 #   hubot get swiss-prot <gene ID> - Returns Swiss-Prot entry for gene
 #   hubot get trembl <gene ID> - Returns TrEMBL entries for gene
+#   hubot get go bp <gene ID> - Returns Biological Process GO terms for gene
 #
 #
 # Dependencies:
@@ -380,4 +381,22 @@ module.exports = (robot) ->
         response = ""
         for id in ids
           response += "#{id}\thttp://www.uniprot.org/uniprot/#{id}\n"
+        msg.send "#{response}"
+
+  robot.respond /get go bp ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=go.BP'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        ids = JSON.parse(body)['go.BP']
+        response = ""
+        for id in ids
+          term = id.term
+          evid = id.evidence
+          if id.pubmed?
+            response += "#{id.id}\t#{term}\t#{evid}\thttp://www.ncbi.nlm.nih.gov/pubmed/#{id.pubmed}\n\n"
+          else
+            response += "{id.id}\t#{term}\t#{evid}\n\n"
         msg.send "#{response}"
