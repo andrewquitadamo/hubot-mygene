@@ -398,9 +398,12 @@ module.exports = (robot) ->
           term = id.term
           evid = id.evidence
           if id.pubmed?
-            response += "#{id.id}\t#{term}\t#{evid}\thttp://www.ncbi.nlm.nih.gov/pubmed/#{id.pubmed}\n\n"
+            response += "#{id.id}\t#{term}\t#{evid}\t"
+            for ref in id.pubmed
+              response += "http://www.ncbi.nlm.nih.gov/pubmed/#{ref}  "
+            response += "\n\n"
           else
-            response += "{id.id}\t#{term}\t#{evid}\n\n"
+            response += "#{id.id}\t#{term}\t#{evid}\n\n"
         msg.send "#{response}"
 
   robot.respond /get go mf ([0-9]+)/i, (msg) ->
@@ -416,9 +419,12 @@ module.exports = (robot) ->
           term = id.term
           evid = id.evidence
           if id.pubmed?
-            response += "#{id.id}\t#{term}\t#{evid}\thttp://www.ncbi.nlm.nih.gov/pubmed/#{id.pubmed}\n\n"
+            response += "#{id.id}\t#{term}\t#{evid}\t"
+            for ref in id.pubmed
+              response += "http://www.ncbi.nlm.nih.gov/pubmed/#{ref}  "
+            response += "\n\n"
           else
-            response += "{id.id}\t#{term}\t#{evid}\n\n"
+            response += "#{id.id}\t#{term}\t#{evid}\n\n"
         msg.send "#{response}"
 
   robot.respond /get go cc ([0-9]+)/i, (msg) ->
@@ -434,7 +440,10 @@ module.exports = (robot) ->
           term = id.term
           evid = id.evidence
           if id.pubmed?
-            response += "#{id.id}\t#{term}\t#{evid}\thttp://www.ncbi.nlm.nih.gov/pubmed/#{id.pubmed}\n\n"
+            response += "#{id.id}\t#{term}\t#{evid}\t"
+            for ref in id.pubmed
+              response += "http://www.ncbi.nlm.nih.gov/pubmed/#{ref}  "
+            response += "\n\n"
           else
-            response += "{id.id}\t#{term}\t#{evid}\n\n"
+            response += "#{id.id}\t#{term}\t#{evid}\n\n"
         msg.send "#{response}"
