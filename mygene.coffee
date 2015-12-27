@@ -27,6 +27,7 @@
 #   hubot get trembl <gene ID> - Returns TrEMBL entries for gene
 #   hubot get go bp <gene ID> - Returns Biological Process GO terms for gene
 #   hubot get go mf <gene ID> - Returns Molecular Function GO terms for gene
+#   hubot get go cc <gene ID> - Returns Cellular Component GO terms for gene
 #
 #
 # Dependencies:
@@ -410,6 +411,24 @@ module.exports = (robot) ->
         msg.send "Uh-oh. Something has gone wrong\n#{error}"
       else
         ids = JSON.parse(body)['go.MF']
+        response = ""
+        for id in ids
+          term = id.term
+          evid = id.evidence
+          if id.pubmed?
+            response += "#{id.id}\t#{term}\t#{evid}\thttp://www.ncbi.nlm.nih.gov/pubmed/#{id.pubmed}\n\n"
+          else
+            response += "{id.id}\t#{term}\t#{evid}\n\n"
+        msg.send "#{response}"
+
+  robot.respond /get go cc ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=go.CC'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        ids = JSON.parse(body)['go.CC']
         response = ""
         for id in ids
           term = id.term
