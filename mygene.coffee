@@ -386,67 +386,32 @@ module.exports = (robot) ->
           response += "#{id}\thttp://www.uniprot.org/uniprot/#{id}\n"
         msg.send "#{response}"
 
-  robot.respond /get go bp ([0-9]+)/i, (msg) ->
-    geneID = msg.match[1]
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=go.BP'
-    request mygenequery, (error, response, body) ->
-      if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
-      else
-        ids = JSON.parse(body)['go.BP']
-        response = ""
-        for id in ids
-          term = id.term
-          evid = id.evidence
-          if id.pubmed?
-            response += "#{id.id}\t#{term}\t#{evid}\t"
-            for ref in id.pubmed
-              response += "http://www.ncbi.nlm.nih.gov/pubmed/#{ref}  "
-            response += "\n\n"
-          else
-            response += "#{id.id}\t#{term}\t#{evid}\n\n"
-        msg.send "#{response}"
+  robot.respond /get go (cc|mf|bp) ([0-9]+)/i, (msg) ->
+    goType = msg.match[1]
+    geneID = msg.match[2]
 
-  robot.respond /get go mf ([0-9]+)/i, (msg) ->
-    geneID = msg.match[1]
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=go.MF'
+    if goType == 'cc'
+      goType = 'go.CC'
+    if goType == 'mf'
+      goType = 'go.MF'
+    if goType == 'bp'
+      goType = 'go.BP'
+    
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=' + goType
     request mygenequery, (error, response, body) ->
       if error?
         msg.send "Uh-oh. Something has gone wrong\n#{error}"
       else
-        ids = JSON.parse(body)['go.MF']
+        ids = JSON.parse(body)[goType]
         response = ""
         for id in ids
-          term = id.term
-          evid = id.evidence
           if id.pubmed?
-            response += "#{id.id}\t#{term}\t#{evid}\t"
+            response += "#{id.id}\t#{id.term}\t#{id.evidence}\t"
             for ref in id.pubmed
               response += "http://www.ncbi.nlm.nih.gov/pubmed/#{ref}  "
             response += "\n\n"
           else
-            response += "#{id.id}\t#{term}\t#{evid}\n\n"
-        msg.send "#{response}"
-
-  robot.respond /get go cc ([0-9]+)/i, (msg) ->
-    geneID = msg.match[1]
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=go.CC'
-    request mygenequery, (error, response, body) ->
-      if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
-      else
-        ids = JSON.parse(body)['go.CC']
-        response = ""
-        for id in ids
-          term = id.term
-          evid = id.evidence
-          if id.pubmed?
-            response += "#{id.id}\t#{term}\t#{evid}\t"
-            for ref in id.pubmed
-              response += "http://www.ncbi.nlm.nih.gov/pubmed/#{ref}  "
-            response += "\n\n"
-          else
-            response += "#{id.id}\t#{term}\t#{evid}\n\n"
+            response += "#{id.id}\t#{id.term}\t#{id.evidence}\n\n"
         msg.send "#{response}"
 
   robot.respond /get unigene ([0-9]+)/i, (msg) ->
