@@ -28,6 +28,7 @@
 #   hubot get go bp <gene ID> - Returns Biological Process GO terms for gene
 #   hubot get go mf <gene ID> - Returns Molecular Function GO terms for gene
 #   hubot get go cc <gene ID> - Returns Cellular Component GO terms for gene
+#   hubot get unigene <gene ID> - Returns Unigene entry for gene
 #
 #
 # Dependencies:
@@ -447,3 +448,16 @@ module.exports = (robot) ->
           else
             response += "#{id.id}\t#{term}\t#{evid}\n\n"
         msg.send "#{response}"
+
+  robot.respond /get unigene ([0-9]+)/i, (msg) ->
+    geneID = msg.match[1]
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=unigene'
+    request mygenequery, (error, response, body) ->
+      if error?
+        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      else
+        id = JSON.parse(body)['unigene']
+        fields = id.split('.')
+        species = fields[0]
+        numid = fields[1]
+        msg.send "#{id}\thttp://www.ncbi.nlm.nih.gov/UniGene/clust.cgi?ORG=#{species}&CID=#{numid}"
