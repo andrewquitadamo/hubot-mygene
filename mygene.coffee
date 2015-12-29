@@ -186,20 +186,7 @@ module.exports = (robot) ->
           response += "#{id}\thttp://www.ncbi.nlm.nih.gov/protein/#{id}\n"
         msg.send "#{response}"
 
-  robot.respond /get pdb ([0-9]+)/i, (msg) ->
-    geneID = msg.match[1]
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=pdb'
-    request mygenequery, (error, response, body) ->
-      if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
-      else
-        ids = JSON.parse(body)['pdb']
-        response = ""
-        for id in ids
-          response += "#{id}\thttp://www.rcsb.org/pdb/explore.do?structureId=#{id}\n"
-        msg.send "#{response}"
-
-  robot.respond /get (kegg|wikipathways|reactome|smpdb|pid|pfam) ([0-9]+)/i, (msg) ->
+  robot.respond /get (kegg|wikipathways|reactome|smpdb|pid|pfam|pdb) ([0-9]+)/i, (msg) ->
     searchTerm = msg.match[1]
     geneID = msg.match[2]
 
@@ -220,6 +207,8 @@ module.exports = (robot) ->
       link = (id) -> "#{id.name}\thttp://pid.nci.nih.gov/search/pathway_landing.shtml?what=graphic&jpg=on&pathway_id=#{id.id}\n"
     if searchTerm = 'pfam'
       link = (id) -> "#{id}\thttp://pfam.xfam.org/family/#{id}\n"
+    if searchTerm = 'pdb'
+      link = (id) -> "#{id}\thttp://www.rcsb.org/pdb/explore.do?structureId=#{id}\n"
 
     mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=' + searchTerm
     request mygenequery, (error, response, body) ->
