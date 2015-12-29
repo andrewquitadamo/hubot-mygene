@@ -212,17 +212,26 @@ module.exports = (robot) ->
           response += "#{id}\thttp://pfam.xfam.org/family/#{id}\n"
         msg.send "#{response}"
 
-  robot.respond /get kegg ([0-9]+)/i, (msg) ->
-    geneID = msg.match[1]
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=pathway.kegg'
+  robot.respond /get (kegg|wikipathways) ([0-9]+)/i, (msg) ->
+    searchTerm = msg.match[1]
+    geneID = msg.match[2]
+
+    if searchTerm == 'kegg'
+      searchTerm = 'pathway.kegg'
+      link = (id) -> "#{id.name}\thttp://www.genome.jp/dbget-bin/www_bget?#{id.id}\n"
+    if searchTerm == 'wikipathways'
+      searchTerm = 'pathway.wikipathways'
+      link = (id) -> "#{id.name}\thttp://www.wikipathways.org/index.php/Pathway:#{id.id}\n"
+
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=' + searchTerm
     request mygenequery, (error, response, body) ->
       if error?
         msg.send "Uh-oh. Something has gone wrong\n#{error}"
       else
-        ids = JSON.parse(body)['pathway.kegg']
+        ids = JSON.parse(body)[searchTerm]
         response = ""
         for id in ids
-          response += "#{id.name}\thttp://www.genome.jp/dbget-bin/www_bget?#{id.id}\n"
+          response += link(id)
         msg.send "#{response}"
 
   robot.respond /get map location ([0-9]+)/i, (msg) ->
@@ -300,19 +309,6 @@ module.exports = (robot) ->
       else
         id = JSON.parse(body)['MIM']
         msg.send "#{id}\thttp://www.omim.org/entry/#{id}"
-
-  robot.respond /get wikipathways ([0-9]+)/i, (msg) ->
-    geneID = msg.match[1]
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=pathway.wikipathways'
-    request mygenequery, (error, response, body) ->
-      if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
-      else
-        ids = JSON.parse(body)['pathway.wikipathways']
-        response = ""
-        for id in ids
-          response += "#{id.name}\thttp://www.wikipathways.org/index.php/Pathway:#{id.id}\n"
-        msg.send "#{response}"
 
   robot.respond /get reactome ([0-9]+)/i, (msg) ->
     geneID = msg.match[1]
