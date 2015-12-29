@@ -212,7 +212,7 @@ module.exports = (robot) ->
           response += "#{id}\thttp://pfam.xfam.org/family/#{id}\n"
         msg.send "#{response}"
 
-  robot.respond /get (kegg|wikipathways) ([0-9]+)/i, (msg) ->
+  robot.respond /get (kegg|wikipathways|reactome) ([0-9]+)/i, (msg) ->
     searchTerm = msg.match[1]
     geneID = msg.match[2]
 
@@ -222,6 +222,9 @@ module.exports = (robot) ->
     if searchTerm == 'wikipathways'
       searchTerm = 'pathway.wikipathways'
       link = (id) -> "#{id.name}\thttp://www.wikipathways.org/index.php/Pathway:#{id.id}\n"
+    if searchTerm == 'reactome'
+      searchTerm = 'pathway.reactome'
+      link = (id) -> "#{id.name}\t#{id.id}\n"
 
     mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=' + searchTerm
     request mygenequery, (error, response, body) ->
@@ -309,19 +312,6 @@ module.exports = (robot) ->
       else
         id = JSON.parse(body)['MIM']
         msg.send "#{id}\thttp://www.omim.org/entry/#{id}"
-
-  robot.respond /get reactome ([0-9]+)/i, (msg) ->
-    geneID = msg.match[1]
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=pathway.reactome'
-    request mygenequery, (error, response, body) ->
-      if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
-      else
-        ids = JSON.parse(body)['pathway.reactome']
-        response = ""
-        for id in ids
-          response += "#{id.name}\t#{id.id}\n"
-        msg.send "#{response}"
 
   robot.respond /get smpdb ([0-9]+)/i, (msg) ->
     geneID = msg.match[1]
