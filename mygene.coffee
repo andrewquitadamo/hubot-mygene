@@ -147,46 +147,7 @@ module.exports = (robot) ->
           response += "#{protein}\n"
         msg.send "#{response}"
 
-  robot.respond /get refseq rna ([0-9]+)/i, (msg) ->
-    geneID = msg.match[1]
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=refseq.rna'
-    request mygenequery, (error, response, body) ->
-      if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
-      else
-        ids = JSON.parse(body)['refseq.rna']
-        response = ""
-        for id in ids
-          response += "#{id}\thttp://www.ncbi.nlm.nih.gov/nuccore/#{id}\n"
-        msg.send "#{response}"
-
-  robot.respond /get refseq genomic ([0-9]+)/i, (msg) ->
-    geneID = msg.match[1]
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=refseq.genomic'
-    request mygenequery, (error, response, body) ->
-      if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
-      else
-        ids = JSON.parse(body)['refseq.genomic']
-        response = ""
-        for id in ids
-          response += "#{id}\thttp://www.ncbi.nlm.nih.gov/nuccore/#{id}\n"
-        msg.send "#{response}"
-
-  robot.respond /get refseq protein ([0-9]+)/i, (msg) ->
-    geneID = msg.match[1]
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=refseq.protein'
-    request mygenequery, (error, response, body) ->
-      if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
-      else
-        ids = JSON.parse(body)['refseq.protein']
-        response = ""
-        for id in ids
-          response += "#{id}\thttp://www.ncbi.nlm.nih.gov/protein/#{id}\n"
-        msg.send "#{response}"
-
-  robot.respond /get (kegg|wikipathways|reactome|smpdb|pid|pfam|pdb) ([0-9]+)/i, (msg) ->
+  robot.respond /get (kegg|wikipathways|reactome|smpdb|pid|pfam|pdb|refseq protein|refseq genomic|refseq rna) ([0-9]+)/i, (msg) ->
     searchTerm = msg.match[1]
     geneID = msg.match[2]
 
@@ -199,16 +160,25 @@ module.exports = (robot) ->
     if searchTerm == 'reactome'
       searchTerm = 'pathway.reactome'
       link = (id) -> "#{id.name}\t#{id.id}\n"
-    if searchTerm = 'smpdb'
+    if searchTerm == 'smpdb'
       searchTerm = 'pathway.smpdb'
       link = (id) -> "#{id.name}\thttp://smpdb.ca/view/#{id.id}\n"
-    if searchTerm = 'pid'
+    if searchTerm == 'pid'
       searchTerm = 'pathway.pid'
       link = (id) -> "#{id.name}\thttp://pid.nci.nih.gov/search/pathway_landing.shtml?what=graphic&jpg=on&pathway_id=#{id.id}\n"
-    if searchTerm = 'pfam'
+    if searchTerm == 'pfam'
       link = (id) -> "#{id}\thttp://pfam.xfam.org/family/#{id}\n"
-    if searchTerm = 'pdb'
+    if searchTerm == 'pdb'
       link = (id) -> "#{id}\thttp://www.rcsb.org/pdb/explore.do?structureId=#{id}\n"
+    if searchTerm == 'refseq protein'
+      searchTerm = 'refseq.protein'
+      link = (id) -> "#{id}\thttp://www.ncbi.nlm.nih.gov/protein/#{id}\n"
+    if searchTerm == 'refseq genomic'
+      searchTerm = 'refseq.genomic'
+      link = (id) -> "#{id}\thttp://www.ncbi.nlm.nih.gov/nuccore/#{id}\n"
+    if searchTerm == 'refseq rna'
+      searchTerm = 'refseq.rna'
+      link = (id) -> "#{id}\thttp://www.ncbi.nlm.nih.gov/nuccore/#{id}\n"
 
     mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=' + searchTerm
     request mygenequery, (error, response, body) ->
