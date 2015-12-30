@@ -111,7 +111,7 @@ module.exports = (robot) ->
             response += "#{ref.text}+\nhttp://www.ncbi.nlm.nih.gov/pubmed/#{ref.pubmed}\n\n"
           msg.send "#{response}"
 
-  robot.respond /get (ensembl gene|map location|hprd|hgnc|homologene|omim|gene type) ([0-9]+)/i, (msg) ->
+  robot.respond /get (ensembl gene|map location|hprd|hgnc|homologene|omim|gene type|unigene) ([0-9]+)/i, (msg) ->
     searchTerm = msg.match[1]
     geneID = msg.match[2]
 
@@ -135,6 +135,12 @@ module.exports = (robot) ->
     if searchTerm == 'gene type'
       searchTerm = 'type_of_gene'
       link = (id) -> "#{id}"
+    if searchTerm = 'unigene'
+      link = (id) ->
+        fields = id.split('.')
+        species = fields[0]
+        numid = fields[1]
+        return "#{id}\thttp://www.ncbi.nlm.nih.gov/UniGene/clust.cgi?ORG=#{species}&CID=#{numid}"
 
     mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=' + searchTerm
     request mygenequery, (error, response, body) ->
@@ -238,16 +244,3 @@ module.exports = (robot) ->
           else
             response += "#{id.id}\t#{id.term}\t#{id.evidence}\n\n"
         msg.send "#{response}"
-
-  robot.respond /get unigene ([0-9]+)/i, (msg) ->
-    geneID = msg.match[1]
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=unigene'
-    request mygenequery, (error, response, body) ->
-      if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
-      else
-        id = JSON.parse(body)['unigene']
-        fields = id.split('.')
-        species = fields[0]
-        numid = fields[1]
-        msg.send "#{id}\thttp://www.ncbi.nlm.nih.gov/UniGene/clust.cgi?ORG=#{species}&CID=#{numid}"
