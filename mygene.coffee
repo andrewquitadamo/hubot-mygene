@@ -111,19 +111,6 @@ module.exports = (robot) ->
             response += "#{ref.text}+\nhttp://www.ncbi.nlm.nih.gov/pubmed/#{ref.pubmed}\n\n"
           msg.send "#{response}"
 
-  robot.respond /get ensembl transcripts ([0-9]+)/i, (msg) ->
-    geneID = msg.match[1]
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=ensembl.transcript'
-    request mygenequery, (error, response, body) ->
-      if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
-      else
-        transcripts = JSON.parse(body)['ensembl.transcript']
-        response = ""
-        for transcript in transcripts
-          response += "#{transcript}\thttp://www.ensembl.org/Homo_sapiens/Transcript/Summary?t=#{transcript}\n"
-        msg.send "#{response}"
-
   robot.respond /get ensembl gene ([0-9]+)/i, (msg) ->
     geneID = msg.match[1]
     mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=ensembl.gene'
@@ -134,20 +121,7 @@ module.exports = (robot) ->
         gene = JSON.parse(body)['ensembl.gene']
         msg.send "#{gene}\thttp://www.ensembl.org/Homo_sapiens/Gene/Summary?g=#{gene}"
 
-  robot.respond /get ensembl proteins ([0-9]+)/i, (msg) ->
-    geneID = msg.match[1]
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=ensembl.protein'
-    request mygenequery, (error, response, body) ->
-      if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
-      else
-        proteins = JSON.parse(body)['ensembl.protein']
-        response = ""
-        for protein in proteins
-          response += "#{protein}\n"
-        msg.send "#{response}"
-
-  robot.respond /get (kegg|wikipathways|reactome|smpdb|pid|pfam|pdb|refseq protein|refseq genomic|refseq rna) ([0-9]+)/i, (msg) ->
+  robot.respond /get (kegg|wikipathways|reactome|smpdb|pid|pfam|pdb|refseq protein|refseq genomic|refseq rna|ensembl proteins|ensembl transcripts) ([0-9]+)/i, (msg) ->
     searchTerm = msg.match[1]
     geneID = msg.match[2]
 
@@ -179,6 +153,12 @@ module.exports = (robot) ->
     if searchTerm == 'refseq rna'
       searchTerm = 'refseq.rna'
       link = (id) -> "#{id}\thttp://www.ncbi.nlm.nih.gov/nuccore/#{id}\n"
+    if searchTerm == 'ensembl proteins'
+      searchTerm = 'ensembl.protein'
+      link = (id) -> "#{id}\n"
+    if searchTerm == 'ensembl transcripts'
+      searchTerm = 'ensembl.transcript'
+      link = (id) -> "#{id}\thttp://www.ensembl.org/Homo_sapiens/Transcript/Summary?t=#{id}\n"
 
     mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=' + searchTerm
     request mygenequery, (error, response, body) ->
