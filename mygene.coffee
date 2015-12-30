@@ -111,17 +111,26 @@ module.exports = (robot) ->
             response += "#{ref.text}+\nhttp://www.ncbi.nlm.nih.gov/pubmed/#{ref.pubmed}\n\n"
           msg.send "#{response}"
 
-  robot.respond /get ensembl gene ([0-9]+)/i, (msg) ->
-    geneID = msg.match[1]
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=ensembl.gene'
+  robot.respond /get (ensembl gene|map location) ([0-9]+)/i, (msg) ->
+    searchTerm = msg.match[1]
+    geneID = msg.match[2]
+
+    if searchTerm == 'ensembl gene'
+      searchTerm = 'ensembl.gene'
+      link = (id) -> "#{id}\thttp://www.ensembl.org/Homo_sapiens/Gene/Summary?g=#{id}"
+    if searchTerm == 'map location'
+      searchTerm = 'map_location'
+      link = (id) -> "#{id}"
+
+    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=' + searchTerm
     request mygenequery, (error, response, body) ->
       if error?
         msg.send "Uh-oh. Something has gone wrong\n#{error}"
       else
-        gene = JSON.parse(body)['ensembl.gene']
-        msg.send "#{gene}\thttp://www.ensembl.org/Homo_sapiens/Gene/Summary?g=#{gene}"
+        id = JSON.parse(body)[searchTerm]
+        msg.send link(id)
 
-  robot.respond /get (kegg|wikipathways|reactome|smpdb|pid|pfam|pdb|refseq protein|refseq genomic|refseq rna|ensembl proteins|ensembl transcripts|alias) ([0-9]+)/i, (msg) ->
+  robot.respond /get (kegg|wikipathways|reactome|smpdb|pid|pfam|pdb|refseq protein|refseq genomic|refseq rna|ensembl proteins|ensembl transcripts|alias|interpro|trembl) ([0-9]+)/i, (msg) ->
     searchTerm = msg.match[1]
     geneID = msg.match[2]
 
@@ -161,6 +170,11 @@ module.exports = (robot) ->
       link = (id) -> "#{id}\thttp://www.ensembl.org/Homo_sapiens/Transcript/Summary?t=#{id}\n"
     if searchTerm == 'alias'
       link = (id) -> "#{id}\n"
+    if searchTerm == 'interpro'
+      link = (id) -> "#{id.desc}\thttp://www.ebi.ac.uk/interpro/entry/#{id.id}\n"
+    if searchTerm == 'trembl'
+      searchTerm = 'uniprot.TrEMBL'
+      link = (id) -> "#{id}\thttp://www.uniprot.org/uniprot/#{id}\n"
 
     mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=' + searchTerm
     request mygenequery, (error, response, body) ->
@@ -172,16 +186,6 @@ module.exports = (robot) ->
         for id in ids
           response += link(id)
         msg.send "#{response}"
-
-  robot.respond /get map location ([0-9]+)/i, (msg) ->
-    geneID = msg.match[1]
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=map_location'
-    request mygenequery, (error, response, body) ->
-      if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
-      else
-        id = JSON.parse(body)['map_location']
-        msg.send "#{id}"
 
   robot.respond /get hprd ([0-9]+)/i, (msg) ->
     geneID = msg.match[1]
@@ -213,19 +217,6 @@ module.exports = (robot) ->
         id = JSON.parse(body)['homologene']
         msg.send "#{id.id}\thttp://www.ncbi.nlm.nih.gov/homologene/#{id.id}"
 
-  robot.respond /get interpro ([0-9]+)/i, (msg) ->
-    geneID = msg.match[1]
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=interpro'
-    request mygenequery, (error, response, body) ->
-      if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
-      else
-        ids = JSON.parse(body)['interpro']
-        response = ""
-        for id in ids
-          response += "#{id.desc}\thttp://www.ebi.ac.uk/interpro/entry/#{id.id}\n"
-        msg.send "#{response}"
-
   robot.respond /get omim ([0-9]+)/i, (msg) ->
     geneID = msg.match[1]
     mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=MIM'
@@ -255,19 +246,6 @@ module.exports = (robot) ->
       else
         id = JSON.parse(body)['uniprot.Swiss-Prot']
         msg.send "#{id}\thttp://www.uniprot.org/uniprot/#{id}"
-
-  robot.respond /get trembl ([0-9]+)/i, (msg) ->
-    geneID = msg.match[1]
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=uniprot.TrEMBL'
-    request mygenequery, (error, response, body) ->
-      if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
-      else
-        ids = JSON.parse(body)['uniprot.TrEMBL']
-        response = ""
-        for id in ids
-          response += "#{id}\thttp://www.uniprot.org/uniprot/#{id}\n"
-        msg.send "#{response}"
 
   robot.respond /get go (cc|mf|bp) ([0-9]+)/i, (msg) ->
     goType = msg.match[1]
