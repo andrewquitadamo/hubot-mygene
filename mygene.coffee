@@ -121,7 +121,7 @@ module.exports = (robot) ->
         gene = JSON.parse(body)['ensembl.gene']
         msg.send "#{gene}\thttp://www.ensembl.org/Homo_sapiens/Gene/Summary?g=#{gene}"
 
-  robot.respond /get (kegg|wikipathways|reactome|smpdb|pid|pfam|pdb|refseq protein|refseq genomic|refseq rna|ensembl proteins|ensembl transcripts) ([0-9]+)/i, (msg) ->
+  robot.respond /get (kegg|wikipathways|reactome|smpdb|pid|pfam|pdb|refseq protein|refseq genomic|refseq rna|ensembl proteins|ensembl transcripts|alias) ([0-9]+)/i, (msg) ->
     searchTerm = msg.match[1]
     geneID = msg.match[2]
 
@@ -159,6 +159,8 @@ module.exports = (robot) ->
     if searchTerm == 'ensembl transcripts'
       searchTerm = 'ensembl.transcript'
       link = (id) -> "#{id}\thttp://www.ensembl.org/Homo_sapiens/Transcript/Summary?t=#{id}\n"
+    if searchTerm == 'alias'
+      link = (id) -> "#{id}\n"
 
     mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=' + searchTerm
     request mygenequery, (error, response, body) ->
@@ -200,19 +202,6 @@ module.exports = (robot) ->
       else
         id = JSON.parse(body)['HGNC']
         msg.send "#{id}\thttp://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=#{id}"
-
-  robot.respond /get alias ([0-9]+)/i, (msg) ->
-    geneID = msg.match[1]
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=alias'
-    request mygenequery, (error, response, body) ->
-      if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
-      else
-        ids = JSON.parse(body)['alias']
-        response = ""
-        for id in ids
-          response += "#{id}\n"
-        msg.send "#{response}"
 
   robot.respond /get homologene ([0-9]+)/i, (msg) ->
     geneID = msg.match[1]
