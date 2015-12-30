@@ -111,7 +111,7 @@ module.exports = (robot) ->
             response += "#{ref.text}+\nhttp://www.ncbi.nlm.nih.gov/pubmed/#{ref.pubmed}\n\n"
           msg.send "#{response}"
 
-  robot.respond /get (ensembl gene|map location|hprd|hgnc) ([0-9]+)/i, (msg) ->
+  robot.respond /get (ensembl gene|map location|hprd|hgnc|homologene) ([0-9]+)/i, (msg) ->
     searchTerm = msg.match[1]
     geneID = msg.match[2]
 
@@ -127,6 +127,8 @@ module.exports = (robot) ->
     if searchTerm == 'hgnc'
       searchTerm = 'HGNC'
       link = (id) -> "#{id}\thttp://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=#{id}"
+    if searchTerm == 'homologene'
+      link = (id) -> "#{id.id}\thttp://www.ncbi.nlm.nih.gov/homologene/#{id.id}"
 
     mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=' + searchTerm
     request mygenequery, (error, response, body) ->
@@ -192,16 +194,6 @@ module.exports = (robot) ->
         for id in ids
           response += link(id)
         msg.send "#{response}"
-
-  robot.respond /get homologene ([0-9]+)/i, (msg) ->
-    geneID = msg.match[1]
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=homologene'
-    request mygenequery, (error, response, body) ->
-      if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
-      else
-        id = JSON.parse(body)['homologene']
-        msg.send "#{id.id}\thttp://www.ncbi.nlm.nih.gov/homologene/#{id.id}"
 
   robot.respond /get omim ([0-9]+)/i, (msg) ->
     geneID = msg.match[1]
