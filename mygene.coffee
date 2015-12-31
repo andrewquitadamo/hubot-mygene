@@ -153,7 +153,7 @@ module.exports = (robot) ->
         id = JSON.parse(body)[searchTerm]
         msg.send link(id)
 
-  robot.respond /get (kegg|wikipathways|reactome|smpdb|pid|pfam|pdb|refseq protein|refseq genomic|refseq rna|ensembl proteins|ensembl transcripts|alias|interpro|trembl) ([0-9]+)/i, (msg) ->
+  robot.respond /get (kegg|wikipathways|reactome|smpdb|pid|pfam|pdb|refseq protein|refseq genomic|refseq rna|ensembl proteins|ensembl transcripts|alias|interpro|trembl|go cc|go mf|go bp) ([0-9]+)/i, (msg) ->
     searchTerm = msg.match[1]
     geneID = msg.match[2]
 
@@ -198,6 +198,22 @@ module.exports = (robot) ->
     if searchTerm == 'trembl'
       searchTerm = 'uniprot.TrEMBL'
       link = (id) -> "#{id}\thttp://www.uniprot.org/uniprot/#{id}\n"
+    if searchTerm == 'go cc'
+      searchTerm = 'go.CC'
+    if searchTerm == 'go bp'
+      searchTerm = 'go.BP'
+    if searchTerm == 'go mf'
+      searchTerm = 'go.MF'
+    if searchTerm == 'go.CC' or searchTerm == 'go.MF' or searchTerm == 'go.BP'
+      link = (id) -> 
+        if id.pubmed?
+          response = "#{id.id}\t#{id.term}\t#{id.evidence}\t"
+          for ref in id.pubmed
+            response += "http://www.ncbi.nlm.nih.gov/pubmed/#{ref}  "
+          response += "\n\n"
+          return response
+        else
+          return "#{id.id}\t#{id.term}\t#{id.evidence}\n\n"
 
     mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=' + searchTerm
     request mygenequery, (error, response, body) ->
@@ -208,32 +224,4 @@ module.exports = (robot) ->
         response = ""
         for id in ids
           response += link(id)
-        msg.send "#{response}"
-
-  robot.respond /get go (cc|mf|bp) ([0-9]+)/i, (msg) ->
-    goType = msg.match[1]
-    geneID = msg.match[2]
-
-    if goType == 'cc'
-      goType = 'go.CC'
-    if goType == 'mf'
-      goType = 'go.MF'
-    if goType == 'bp'
-      goType = 'go.BP'
-    
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=' + goType
-    request mygenequery, (error, response, body) ->
-      if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
-      else
-        ids = JSON.parse(body)[goType]
-        response = ""
-        for id in ids
-          if id.pubmed?
-            response += "#{id.id}\t#{id.term}\t#{id.evidence}\t"
-            for ref in id.pubmed
-              response += "http://www.ncbi.nlm.nih.gov/pubmed/#{ref}  "
-            response += "\n\n"
-          else
-            response += "#{id.id}\t#{id.term}\t#{id.evidence}\n\n"
         msg.send "#{response}"
