@@ -53,20 +53,6 @@ module.exports = (robot) ->
           response += "ID: #{hit.entrezgene}\nName: #{hit.name}\nSymbol\n#{hit.symbol}\n-----\n"
         msg.send "#{response}"
 
-  robot.respond /get gene position ([0-9]+)/i, (msg) ->
-    geneID = msg.match[1]
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=genomic_pos_hg19'
-    request mygenequery, (error, response, body) ->
-      if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
-        return
-      else
-        pos = JSON.parse(body)['genomic_pos_hg19']
-        if pos?
-          msg.send "chr: #{pos.chr}\nstart: #{pos.start}\nend: #{pos.end}\nstrand: #{pos.strand}"
-        else
-          msg.send "There doesn't seem to be any position information"
-
   pattern = new RegExp('get gene refs ([0-9]+)' +
                        "(?: from ([0-9]+))?" +
                        "(?: to ([0-9]+))?", 'i')
@@ -98,7 +84,7 @@ module.exports = (robot) ->
             response += "#{ref.text}+\nhttp://www.ncbi.nlm.nih.gov/pubmed/#{ref.pubmed}\n\n"
           msg.send "#{response}"
 
-  robot.respond /get (ensembl gene|map location|hprd|hgnc|homologene|omim|gene type|unigene|swiss-prot|gene summary) ([0-9]+)/i, (msg) ->
+  robot.respond /get (ensembl gene|map location|hprd|hgnc|homologene|omim|gene type|unigene|swiss-prot|gene summary|gene position) ([0-9]+)/i, (msg) ->
     searchTerm = msg.match[1].toLowerCase()
     geneID = msg.match[2]
 
@@ -134,6 +120,9 @@ module.exports = (robot) ->
     if searchTerm == 'gene summary'
       searchTerm = 'summary'
       link = (id) -> "#{id}"
+    if searchTerm == 'gene position'
+      searchTerm = 'genomic_pos_hg19'
+      link = (pos) -> "chr: #{pos.chr}\nstart: #{pos.start}\nend: #{pos.end}\nstrand: #{pos.strand}" 
 
     mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=' + searchTerm
     request mygenequery, (error, response, body) ->
