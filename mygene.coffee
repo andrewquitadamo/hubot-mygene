@@ -75,6 +75,63 @@ getSearchLink = (searchTerm) ->
   if searchTerm == 'gene position'
     searchTerm = 'genomic_pos_hg19'
     link = (pos) -> "chr: #{pos.chr}\nstart: #{pos.start}\nend: #{pos.end}\nstrand: #{pos.strand}"
+  if searchTerm == 'kegg'
+    searchTerm = 'pathway.kegg'
+    link = (id) -> "#{id.name}\thttp://www.genome.jp/dbget-bin/www_bget?#{id.id}\n"
+  if searchTerm == 'wikipathways'
+    searchTerm = 'pathway.wikipathways'
+    link = (id) -> "#{id.name}\thttp://www.wikipathways.org/index.php/Pathway:#{id.id}\n"
+  if searchTerm == 'reactome'
+    searchTerm = 'pathway.reactome'
+    link = (id) -> "#{id.name}\t#{id.id}\n"
+  if searchTerm == 'smpdb'
+    searchTerm = 'pathway.smpdb'
+    link = (id) -> "#{id.name}\thttp://smpdb.ca/view/#{id.id}\n"
+  if searchTerm == 'pid'
+    searchTerm = 'pathway.pid'
+    link = (id) -> "#{id.name}\thttp://pid.nci.nih.gov/search/pathway_landing.shtml?what=graphic&jpg=on&pathway_id=#{id.id}\n"
+  if searchTerm == 'pfam'
+    link = (id) -> "#{id}\thttp://pfam.xfam.org/family/#{id}\n"
+  if searchTerm == 'pdb'
+    link = (id) -> "#{id}\thttp://www.rcsb.org/pdb/explore.do?structureId=#{id}\n"
+  if searchTerm == 'refseq protein'
+    searchTerm = 'refseq.protein'
+    link = (id) -> "#{id}\thttp://www.ncbi.nlm.nih.gov/protein/#{id}\n"
+  if searchTerm == 'refseq genomic'
+    searchTerm = 'refseq.genomic'
+    link = (id) -> "#{id}\thttp://www.ncbi.nlm.nih.gov/nuccore/#{id}\n"
+  if searchTerm == 'refseq rna'
+    searchTerm = 'refseq.rna'
+    link = (id) -> "#{id}\thttp://www.ncbi.nlm.nih.gov/nuccore/#{id}\n"
+  if searchTerm == 'ensembl proteins'
+    searchTerm = 'ensembl.protein'
+    link = (id) -> "#{id}\n"
+  if searchTerm == 'ensembl transcripts'
+    searchTerm = 'ensembl.transcript'
+    link = (id) -> "#{id}\thttp://www.ensembl.org/Homo_sapiens/Transcript/Summary?t=#{id}\n"
+  if searchTerm == 'alias'
+    link = (id) -> "#{id}\n"
+  if searchTerm == 'interpro'
+    link = (id) -> "#{id.desc}\thttp://www.ebi.ac.uk/interpro/entry/#{id.id}\n"
+  if searchTerm == 'trembl'
+    searchTerm = 'uniprot.TrEMBL'
+    link = (id) -> "#{id}\thttp://www.uniprot.org/uniprot/#{id}\n"
+  if searchTerm == 'go cc'
+    searchTerm = 'go.CC'
+  if searchTerm == 'go bp'
+    searchTerm = 'go.BP'
+  if searchTerm == 'go mf'
+    searchTerm = 'go.MF'
+  if searchTerm == 'go.CC' or searchTerm == 'go.MF' or searchTerm == 'go.BP'
+    link = (id) ->
+      if id.pubmed?
+        response = "#{id.id}\t#{id.term}\t#{id.evidence}\t"
+        for ref in id.pubmed
+          response += "http://www.ncbi.nlm.nih.gov/pubmed/#{ref}  "
+        response += "\n\n"
+        return response
+      else
+        return "#{id.id}\t#{id.term}\t#{id.evidence}\n\n"
 
   return [searchTerm, link]
 
@@ -141,63 +198,7 @@ module.exports = (robot) ->
     searchTerm = msg.match[1].toLowerCase()
     geneID = msg.match[2]
 
-    if searchTerm == 'kegg'
-      searchTerm = 'pathway.kegg'
-      link = (id) -> "#{id.name}\thttp://www.genome.jp/dbget-bin/www_bget?#{id.id}\n"
-    if searchTerm == 'wikipathways'
-      searchTerm = 'pathway.wikipathways'
-      link = (id) -> "#{id.name}\thttp://www.wikipathways.org/index.php/Pathway:#{id.id}\n"
-    if searchTerm == 'reactome'
-      searchTerm = 'pathway.reactome'
-      link = (id) -> "#{id.name}\t#{id.id}\n"
-    if searchTerm == 'smpdb'
-      searchTerm = 'pathway.smpdb'
-      link = (id) -> "#{id.name}\thttp://smpdb.ca/view/#{id.id}\n"
-    if searchTerm == 'pid'
-      searchTerm = 'pathway.pid'
-      link = (id) -> "#{id.name}\thttp://pid.nci.nih.gov/search/pathway_landing.shtml?what=graphic&jpg=on&pathway_id=#{id.id}\n"
-    if searchTerm == 'pfam'
-      link = (id) -> "#{id}\thttp://pfam.xfam.org/family/#{id}\n"
-    if searchTerm == 'pdb'
-      link = (id) -> "#{id}\thttp://www.rcsb.org/pdb/explore.do?structureId=#{id}\n"
-    if searchTerm == 'refseq protein'
-      searchTerm = 'refseq.protein'
-      link = (id) -> "#{id}\thttp://www.ncbi.nlm.nih.gov/protein/#{id}\n"
-    if searchTerm == 'refseq genomic'
-      searchTerm = 'refseq.genomic'
-      link = (id) -> "#{id}\thttp://www.ncbi.nlm.nih.gov/nuccore/#{id}\n"
-    if searchTerm == 'refseq rna'
-      searchTerm = 'refseq.rna'
-      link = (id) -> "#{id}\thttp://www.ncbi.nlm.nih.gov/nuccore/#{id}\n"
-    if searchTerm == 'ensembl proteins'
-      searchTerm = 'ensembl.protein'
-      link = (id) -> "#{id}\n"
-    if searchTerm == 'ensembl transcripts'
-      searchTerm = 'ensembl.transcript'
-      link = (id) -> "#{id}\thttp://www.ensembl.org/Homo_sapiens/Transcript/Summary?t=#{id}\n"
-    if searchTerm == 'alias'
-      link = (id) -> "#{id}\n"
-    if searchTerm == 'interpro'
-      link = (id) -> "#{id.desc}\thttp://www.ebi.ac.uk/interpro/entry/#{id.id}\n"
-    if searchTerm == 'trembl'
-      searchTerm = 'uniprot.TrEMBL'
-      link = (id) -> "#{id}\thttp://www.uniprot.org/uniprot/#{id}\n"
-    if searchTerm == 'go cc'
-      searchTerm = 'go.CC'
-    if searchTerm == 'go bp'
-      searchTerm = 'go.BP'
-    if searchTerm == 'go mf'
-      searchTerm = 'go.MF'
-    if searchTerm == 'go.CC' or searchTerm == 'go.MF' or searchTerm == 'go.BP'
-      link = (id) -> 
-        if id.pubmed?
-          response = "#{id.id}\t#{id.term}\t#{id.evidence}\t"
-          for ref in id.pubmed
-            response += "http://www.ncbi.nlm.nih.gov/pubmed/#{ref}  "
-          response += "\n\n"
-          return response
-        else
-          return "#{id.id}\t#{id.term}\t#{id.evidence}\n\n"
+    [searchTerm, link] = getSearchLink(searchTerm)
 
     mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=' + searchTerm
     request mygenequery, (error, response, body) ->
