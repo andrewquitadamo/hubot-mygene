@@ -74,6 +74,9 @@ getSearchLink = (searchTerm) ->
     link = (id) -> "#{id}"
   if searchTerm == 'gene position hg19'
     searchTerm = 'genomic_pos_hg19'
+  if searchTerm == 'gene position'
+    searchTerm = 'genomic_pos'
+  if searchTerm == 'genomic_pos_hg19' or searchTerm =='genomic_pos'
     link = (pos) -> "chr: #{pos.chr}\nstart: #{pos.start}\nend: #{pos.end}\nstrand: #{pos.strand}"
   if searchTerm == 'kegg'
     searchTerm = 'pathway.kegg'
@@ -180,7 +183,7 @@ module.exports = (robot) ->
             response += "#{ref.text}+\nhttp://www.ncbi.nlm.nih.gov/pubmed/#{ref.pubmed}\n\n"
           msg.send "#{response}"
 
-  robot.respond /get (ensembl gene|map location|hprd|hgnc|homologene|omim|gene type|unigene|swiss-prot|gene summary|gene position hg19) ([0-9]+)/i, (msg) ->
+  robot.respond /get (ensembl gene|map location|hprd|hgnc|homologene|omim|gene type|unigene|swiss-prot|gene summary|gene position hg19|gene position) ([0-9]+)/i, (msg) ->
     searchTerm = msg.match[1].toLowerCase()
     geneID = msg.match[2]
 
