@@ -39,6 +39,45 @@
 
 request = require 'request'
 
+getSearchLink = (searchTerm) ->
+  if searchTerm == 'ensembl gene'
+    searchTerm = 'ensembl.gene'
+    link = (id) -> "#{id}\thttp://www.ensembl.org/Homo_sapiens/Gene/Summary?g=#{id}"
+  if searchTerm == 'map location'
+    searchTerm = 'map_location'
+    link = (id) -> "#{id}"
+  if searchTerm == 'hprd'
+    searchTerm = 'HPRD'
+    link = (id) -> "#{id}\twww.hprd.org/protein/#{id}"
+  if searchTerm == 'hgnc'
+    searchTerm = 'HGNC'
+    link = (id) -> "#{id}\thttp://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=#{id}"
+  if searchTerm == 'homologene'
+    link = (id) -> "#{id.id}\thttp://www.ncbi.nlm.nih.gov/homologene/#{id.id}"
+  if searchTerm == 'omim'
+    searchTerm = 'MIM'
+    link = (id) -> "#{id}\thttp://www.omim.org/entry/#{id}"
+  if searchTerm == 'gene type'
+    searchTerm = 'type_of_gene'
+    link = (id) -> "#{id}"
+  if searchTerm == 'unigene'
+    link = (id) ->
+      fields = id.split('.')
+      species = fields[0]
+      numid = fields[1]
+      return "#{id}\thttp://www.ncbi.nlm.nih.gov/UniGene/clust.cgi?ORG=#{species}&CID=#{numid}"
+  if searchTerm == 'swiss-prot'
+    searchTerm = 'uniprot.Swiss-Prot'
+    link = (id) -> "#{id}\thttp://www.uniprot.org/uniprot/#{id}"
+  if searchTerm == 'gene summary'
+    searchTerm = 'summary'
+    link = (id) -> "#{id}"
+  if searchTerm == 'gene position'
+    searchTerm = 'genomic_pos_hg19'
+    link = (pos) -> "chr: #{pos.chr}\nstart: #{pos.start}\nend: #{pos.end}\nstrand: #{pos.strand}"
+
+  return [searchTerm, link]
+
 module.exports = (robot) ->
   robot.respond /find gene ([\w.+\-\*]+)/i, (msg) ->
     query = msg.match[1]
@@ -88,41 +127,7 @@ module.exports = (robot) ->
     searchTerm = msg.match[1].toLowerCase()
     geneID = msg.match[2]
 
-    if searchTerm == 'ensembl gene'
-      searchTerm = 'ensembl.gene'
-      link = (id) -> "#{id}\thttp://www.ensembl.org/Homo_sapiens/Gene/Summary?g=#{id}"
-    if searchTerm == 'map location'
-      searchTerm = 'map_location'
-      link = (id) -> "#{id}"
-    if searchTerm == 'hprd'
-      searchTerm = 'HPRD'
-      link = (id) -> "#{id}\twww.hprd.org/protein/#{id}"
-    if searchTerm == 'hgnc'
-      searchTerm = 'HGNC'
-      link = (id) -> "#{id}\thttp://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=#{id}"
-    if searchTerm == 'homologene'
-      link = (id) -> "#{id.id}\thttp://www.ncbi.nlm.nih.gov/homologene/#{id.id}"
-    if searchTerm == 'omim'
-      searchTerm = 'MIM'
-      link = (id) -> "#{id}\thttp://www.omim.org/entry/#{id}"
-    if searchTerm == 'gene type'
-      searchTerm = 'type_of_gene'
-      link = (id) -> "#{id}"
-    if searchTerm == 'unigene'
-      link = (id) ->
-        fields = id.split('.')
-        species = fields[0]
-        numid = fields[1]
-        return "#{id}\thttp://www.ncbi.nlm.nih.gov/UniGene/clust.cgi?ORG=#{species}&CID=#{numid}"
-    if searchTerm == 'swiss-prot'
-      searchTerm = 'uniprot.Swiss-Prot'
-      link = (id) -> "#{id}\thttp://www.uniprot.org/uniprot/#{id}"
-    if searchTerm == 'gene summary'
-      searchTerm = 'summary'
-      link = (id) -> "#{id}"
-    if searchTerm == 'gene position'
-      searchTerm = 'genomic_pos_hg19'
-      link = (pos) -> "chr: #{pos.chr}\nstart: #{pos.start}\nend: #{pos.end}\nstrand: #{pos.strand}" 
+    [searchTerm, link] = getSearchLink(searchTerm)
 
     mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=' + searchTerm
     request mygenequery, (error, response, body) ->
