@@ -67,19 +67,6 @@ module.exports = (robot) ->
         else
           msg.send "There doesn't seem to be any position information"
 
-  robot.respond /get gene summary ([0-9]+)/i, (msg) ->
-    geneID = msg.match[1]
-    mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=summary'
-    request mygenequery, (error, response, body) ->
-      if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
-      else
-        summary = JSON.parse(body)['summary']
-        if summary?
-          msg.send "#{summary}"
-        else
-          msg.send "There doesn't seem to be a summary for gene #{geneID}"
-
   pattern = new RegExp('get gene refs ([0-9]+)' +
                        "(?: from ([0-9]+))?" +
                        "(?: to ([0-9]+))?", 'i')
@@ -111,7 +98,7 @@ module.exports = (robot) ->
             response += "#{ref.text}+\nhttp://www.ncbi.nlm.nih.gov/pubmed/#{ref.pubmed}\n\n"
           msg.send "#{response}"
 
-  robot.respond /get (ensembl gene|map location|hprd|hgnc|homologene|omim|gene type|unigene|swiss-prot) ([0-9]+)/i, (msg) ->
+  robot.respond /get (ensembl gene|map location|hprd|hgnc|homologene|omim|gene type|unigene|swiss-prot|gene summary) ([0-9]+)/i, (msg) ->
     searchTerm = msg.match[1].toLowerCase()
     geneID = msg.match[2]
 
@@ -144,6 +131,9 @@ module.exports = (robot) ->
     if searchTerm == 'swiss-prot'
       searchTerm = 'uniprot.Swiss-Prot'
       link = (id) -> "#{id}\thttp://www.uniprot.org/uniprot/#{id}"
+    if searchTerm == 'gene summary'
+      searchTerm = 'summary'
+      link = (id) -> "#{id}"
 
     mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=' + searchTerm
     request mygenequery, (error, response, body) ->
