@@ -112,7 +112,7 @@ module.exports = (robot) ->
           msg.send "#{response}"
 
   robot.respond /get (ensembl gene|map location|hprd|hgnc|homologene|omim|gene type|unigene|swiss-prot) ([0-9]+)/i, (msg) ->
-    searchTerm = msg.match[1]
+    searchTerm = msg.match[1].toLowerCase()
     geneID = msg.match[2]
 
     if searchTerm == 'ensembl gene'
@@ -154,7 +154,7 @@ module.exports = (robot) ->
         msg.send link(id)
 
   robot.respond /get (kegg|wikipathways|reactome|smpdb|pid|pfam|pdb|refseq protein|refseq genomic|refseq rna|ensembl proteins|ensembl transcripts|alias|interpro|trembl|go cc|go mf|go bp) ([0-9]+)/i, (msg) ->
-    searchTerm = msg.match[1]
+    searchTerm = msg.match[1].toLowerCase()
     geneID = msg.match[2]
 
     if searchTerm == 'kegg'
