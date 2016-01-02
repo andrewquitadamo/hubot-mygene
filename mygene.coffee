@@ -139,85 +139,85 @@ getSearchLink = (searchTerm) ->
   return [searchTerm, link]
 
 module.exports = (robot) ->
-  robot.respond /find gene ([\w.+\-\*]+)/i, (msg) ->
-    query = msg.match[1]
+  robot.respond /find gene ([\w.+\-\*]+)/i, (res) ->
+    query = res.match[1]
     mygenequery = 'http://mygene.info/v2/query?q=' + query
     request mygenequery, (error, response, body) ->
       if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+        res.send "Uh-oh. Something has gone wrong\n#{error}"
       if response.statusCode != 200
-        msg.send "Uh-oh. Something has gone wrong\nHTTP Code #{response.statusCode}"
+        res.send "Uh-oh. Something has gone wrong\nHTTP Code #{response.statusCode}"
       else
         hits = JSON.parse(body)['hits']
         response = ""
         for hit in hits
           response += "ID: #{hit.entrezgene}\nName: #{hit.name}\nSymbol\n#{hit.symbol}\n-----\n"
-        msg.send "#{response}"
+        res.send "#{response}"
 
   pattern = new RegExp('get gene refs ([0-9]+)' +
                        "(?: from ([0-9]+))?" +
                        "(?: to ([0-9]+))?", 'i')
-  robot.respond pattern, (msg) ->
-    geneID = msg.match[1]
-    start = msg.match[2]
-    end = msg.match[3]
+  robot.respond pattern, (res) ->
+    geneID = res.match[1]
+    start = res.match[2]
+    end = res.match[3]
     mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=generif'
     request mygenequery, (error, response, body) ->
       if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+        res.send "Uh-oh. Something has gone wrong\n#{error}"
       if response.statusCode != 200
-        msg.send "Uh-oh. Something has gone wrong\nHTTP Code #{response.statusCode}"
+        res.send "Uh-oh. Something has gone wrong\nHTTP Code #{response.statusCode}"
       else
         refs = JSON.parse(body)['generif']
         refLength = refs.length
         if start? and end?
           if end-start > 100
-            msg.send "Woah, slow down there partner. Try a range less than 100"
+            res.send "Woah, slow down there partner. Try a range less than 100"
             return
           results = refs.slice(parseInt(start)-1,parseInt(end))
           response = ""
           for ref in results 
             response += "#{ref.text}+\nhttp://www.ncbi.nlm.nih.gov/pubmed/#{ref.pubmed}\n\n"
-          msg.send "#{response}" 
+          res.send "#{response}" 
         else
-          msg.send "10 of #{refLength} references"
+          res.send "10 of #{refLength} references"
           firstTen = refs.slice(0,10)
           response = ""
           for ref in firstTen
             response += "#{ref.text}+\nhttp://www.ncbi.nlm.nih.gov/pubmed/#{ref.pubmed}\n\n"
-          msg.send "#{response}"
+          res.send "#{response}"
 
-  robot.respond /get (ensembl gene|map location|hprd|hgnc|homologene|omim|gene type|unigene|swiss-prot|gene summary|gene position hg19|gene position) ([0-9]+)/i, (msg) ->
-    searchTerm = msg.match[1].toLowerCase()
-    geneID = msg.match[2]
+  robot.respond /get (ensembl gene|map location|hprd|hgnc|homologene|omim|gene type|unigene|swiss-prot|gene summary|gene position hg19|gene position) ([0-9]+)/i, (res) ->
+    searchTerm = res.match[1].toLowerCase()
+    geneID = res.match[2]
 
     [searchTerm, link] = getSearchLink(searchTerm)
 
     mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=' + searchTerm
     request mygenequery, (error, response, body) ->
       if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+        res.send "Uh-oh. Something has gone wrong\n#{error}"
       if response.statusCode != 200
-        msg.send "Uh-oh. Something has gone wrong\nHTTP Code #{response.statusCode}"
+        res.send "Uh-oh. Something has gone wrong\nHTTP Code #{response.statusCode}"
       else
         id = JSON.parse(body)[searchTerm]
-        msg.send link(id)
+        res.send link(id)
 
-  robot.respond /get (kegg|wikipathways|reactome|smpdb|pid|pfam|pdb|refseq protein|refseq genomic|refseq rna|ensembl proteins|ensembl transcripts|alias|interpro|trembl|go cc|go mf|go bp) ([0-9]+)/i, (msg) ->
-    searchTerm = msg.match[1].toLowerCase()
-    geneID = msg.match[2]
+  robot.respond /get (kegg|wikipathways|reactome|smpdb|pid|pfam|pdb|refseq protein|refseq genomic|refseq rna|ensembl proteins|ensembl transcripts|alias|interpro|trembl|go cc|go mf|go bp) ([0-9]+)/i, (res) ->
+    searchTerm = res.match[1].toLowerCase()
+    geneID = res.match[2]
 
     [searchTerm, link] = getSearchLink(searchTerm)
 
     mygenequery = 'http://mygene.info/v2/gene/' + geneID + '?fields=' + searchTerm
     request mygenequery, (error, response, body) ->
       if error?
-        msg.send "Uh-oh. Something has gone wrong\n#{error}"
+        res.send "Uh-oh. Something has gone wrong\n#{error}"
       if response.statusCode != 200
-        msg.send "Uh-oh. Something has gone wrong\nHTTP Code #{response.statusCode}"
+        res.send "Uh-oh. Something has gone wrong\nHTTP Code #{response.statusCode}"
       else
         ids = JSON.parse(body)[searchTerm]
         response = ""
         for id in ids
           response += link(id)
-        msg.send "#{response}"
+        res.send "#{response}"
