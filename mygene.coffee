@@ -145,6 +145,8 @@ module.exports = (robot) ->
     request mygenequery, (error, response, body) ->
       if error?
         msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      if response.statusCode != 200
+        msg.send "Uh-oh. Something has gone wrong\nHTTP Code #{response.statusCode}"
       else
         hits = JSON.parse(body)['hits']
         response = ""
@@ -163,6 +165,8 @@ module.exports = (robot) ->
     request mygenequery, (error, response, body) ->
       if error?
         msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      if response.statusCode != 200
+        msg.send "Uh-oh. Something has gone wrong\nHTTP Code #{response.statusCode}"
       else
         refs = JSON.parse(body)['generif']
         refLength = refs.length
@@ -193,6 +197,8 @@ module.exports = (robot) ->
     request mygenequery, (error, response, body) ->
       if error?
         msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      if response.statusCode != 200
+        msg.send "Uh-oh. Something has gone wrong\nHTTP Code #{response.statusCode}"
       else
         id = JSON.parse(body)[searchTerm]
         msg.send link(id)
@@ -207,6 +213,8 @@ module.exports = (robot) ->
     request mygenequery, (error, response, body) ->
       if error?
         msg.send "Uh-oh. Something has gone wrong\n#{error}"
+      if response.statusCode != 200
+        msg.send "Uh-oh. Something has gone wrong\nHTTP Code #{response.statusCode}"
       else
         ids = JSON.parse(body)[searchTerm]
         response = ""
