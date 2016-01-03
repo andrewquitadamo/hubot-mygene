@@ -135,6 +135,8 @@ getSearchLink = (searchTerm) ->
         return response
       else
         return "#{id.id}\t#{id.term}\t#{id.evidence}\n\n"
+  if searchTerm == 'prosite'
+    link = (id) -> "#{id}\thttp://prosite.expasy.org/#{id}\n"
 
   return [searchTerm, link]
 
@@ -203,7 +205,7 @@ module.exports = (robot) ->
         id = JSON.parse(body)[searchTerm]
         res.send link(id)
 
-  robot.respond /get (kegg|wikipathways|reactome|smpdb|pid|pfam|pdb|refseq protein|refseq genomic|refseq rna|ensembl proteins|ensembl transcripts|alias|interpro|trembl|go cc|go mf|go bp) ([0-9]+)/i, (res) ->
+  robot.respond /get (kegg|wikipathways|reactome|smpdb|pid|pfam|pdb|refseq protein|refseq genomic|refseq rna|ensembl proteins|ensembl transcripts|alias|interpro|trembl|go cc|go mf|go bp|prosite) ([0-9]+)/i, (res) ->
     searchTerm = res.match[1].toLowerCase()
     geneID = res.match[2]
 
