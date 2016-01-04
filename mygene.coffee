@@ -57,6 +57,14 @@ getSearchLink = (searchTerm) ->
     link = (id) -> "#{id}\thttp://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=#{id}"
   if searchTerm == 'homologene'
     link = (id) -> "#{id.id}\thttp://www.ncbi.nlm.nih.gov/homologene/#{id.id}"
+  if searchTerm == 'homologene genes'
+    searchTerm = 'homologene.genes'
+    link = (id) -> 
+      response = ""
+      taxid = id[0]
+      geneid = id[1]
+      response += "TaxId: #{taxid}\tGene Id: #{geneid}\n"
+      return response
   if searchTerm == 'omim'
     searchTerm = 'MIM'
     link = (id) -> "#{id}\thttp://www.omim.org/entry/#{id}"
@@ -210,7 +218,7 @@ module.exports = (robot) ->
         id = JSON.parse(body)[searchTerm]
         res.send link(id)
 
-  robot.respond /get (kegg|wikipathways|reactome|smpdb|pid|pfam|pdb|refseq protein|refseq genomic|refseq rna|ensembl proteins|ensembl transcripts|alias|interpro|trembl|go cc|go mf|go bp|prosite) ([0-9]+)/i, (res) ->
+  robot.respond /get (kegg|wikipathways|reactome|smpdb|pid|pfam|pdb|refseq protein|refseq genomic|refseq rna|ensembl proteins|ensembl transcripts|alias|interpro|trembl|go cc|go mf|go bp|prosite|homologene genes) ([0-9]+)/i, (res) ->
     searchTerm = res.match[1].toLowerCase()
     geneID = res.match[2]
 
