@@ -137,6 +137,8 @@ getSearchLink = (searchTerm) ->
         return "#{id.id}\t#{id.term}\t#{id.evidence}\n\n"
   if searchTerm == 'prosite'
     link = (id) -> "#{id}\thttp://prosite.expasy.org/#{id}\n"
+  if searchTerm == 'taxid'
+    link = (id) -> "#{id}\thttp://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=#{id}"
 
   return [searchTerm, link]
 
@@ -189,7 +191,7 @@ module.exports = (robot) ->
             response += "#{ref.text}+\nhttp://www.ncbi.nlm.nih.gov/pubmed/#{ref.pubmed}\n\n"
           res.send "#{response}"
 
-  robot.respond /get (ensembl gene|map location|hprd|hgnc|homologene|omim|gene type|unigene|swiss-prot|gene summary|gene position hg19|gene position) ([0-9]+)/i, (res) ->
+  robot.respond /get (ensembl gene|map location|hprd|hgnc|homologene|omim|gene type|unigene|swiss-prot|gene summary|gene position hg19|gene position|taxid) ([0-9]+)/i, (res) ->
     searchTerm = res.match[1].toLowerCase()
     geneID = res.match[2]
 
