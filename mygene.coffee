@@ -29,6 +29,9 @@
 #   hubot get go mf <gene ID> - Returns Molecular Function GO terms for gene
 #   hubot get go cc <gene ID> - Returns Cellular Component GO terms for gene
 #   hubot get unigene <gene ID> - Returns Unigene entry for gene
+#   hubot get prosite <gene ID> - Returns Prosite entries for gene
+#   hubot get taxid <gene ID> - Returns TaxId for species with gene
+#
 #
 #
 # Dependencies:
