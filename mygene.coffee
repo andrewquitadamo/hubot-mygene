@@ -154,9 +154,13 @@ getSearchLink = (searchTerm) ->
   return [searchTerm, link]
 
 module.exports = (robot) ->
-  robot.respond /find gene ([\w.+\-\*]+)/i, (res) ->
+  robot.respond /find gene ([\w.+\-\*]+) ?(\w.+|[0-9]+])?/i, (res) ->
     query = res.match[1]
-    mygenequery = 'http://mygene.info/v2/query?q=' + query
+    species = res.match[2]
+    if species?
+      mygenequery = 'http://mygene.info/v2/query?q=' + query  + '&species=' + species
+    else
+      mygenequery = 'http://mygene.info/v2/query?q=' + query
     request mygenequery, (error, response, body) ->
       if error?
         res.send "Uh-oh. Something has gone wrong\n#{error}"
