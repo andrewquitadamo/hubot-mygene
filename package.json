@@ -1,0 +1,24 @@
+{
+  "name": "hubot-mygene",
+  "version": "0.1.0",
+  "description": "A hubot script to interact with the mygene.info API",
+  "main": "index.coffee",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andrewquitadamo/hubot-mygene.git"
+  },
+  "keywords": [
+    "hubot"
+  ],
+  "author": "Andrew Quitadamo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/andrewquitadamo/hubot-mygene/issues"
+  },
+  "dependencies": {
+    "request": "~2.67.0"
+  }
+}
