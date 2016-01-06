@@ -170,7 +170,7 @@ module.exports = (robot) ->
         hits = JSON.parse(body)['hits']
         response = ""
         for hit in hits
-          response += "ID: #{hit.entrezgene}\nName: #{hit.name}\nSymbol\n#{hit.symbol}\n-----\n"
+          response += "ID: #{hit.entrezgene}\nTaxId: #{hit.taxid}\nName: #{hit.name}\nSymbol: #{hit.symbol}\n-----\n"
         res.send "#{response}"
 
   pattern = new RegExp('get gene refs ([0-9]+)' +
