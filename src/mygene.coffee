@@ -1,5 +1,6 @@
 # Commands:
-#   hubot find gene <query> - Returns ID, Name and Symbol of genes matching query
+#   hubot find gene <query> - Returns ID, TaxId, Name and Symbol of genes matching query
+#   hubot find gene <query> <species> - Limits search by species. Species can be TaxId.
 #   hubot get gene position <gene ID> - Returns genomic position for gene ID. Position in HG19. 
 #   hubot get gene summary <gene ID> - Returns summary of gene
 #   hubot get ensembl gene <gene ID> - Returns Ensembl gene ID for gene
