@@ -1,6 +1,7 @@
 # Commands:
 #   hubot find gene <query> - Returns ID, TaxId, Name and Symbol of genes matching query
 #   hubot find gene <query> <species> - Limits search by species. Species can be TaxId.
+#   hubot get gene symbol <gene ID> - Returns gene symbol for gene ID.
 #   hubot get gene position <gene ID> - Returns genomic position for gene ID. Position in HG19. 
 #   hubot get gene summary <gene ID> - Returns summary of gene
 #   hubot get ensembl gene <gene ID> - Returns Ensembl gene ID for gene
@@ -151,6 +152,9 @@ getSearchLink = (searchTerm) ->
     link = (id) -> "#{id}\thttp://prosite.expasy.org/#{id}\n"
   if searchTerm == 'taxid'
     link = (id) -> "#{id}\thttp://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=#{id}"
+  if searchTerm == 'gene symbol'
+    searchTerm = 'symbol'
+    link = (id) -> "#{id}"
 
   return [searchTerm, link]
 
@@ -207,7 +211,7 @@ module.exports = (robot) ->
             response += "#{ref.text}+\nhttp://www.ncbi.nlm.nih.gov/pubmed/#{ref.pubmed}\n\n"
           res.send "#{response}"
 
-  robot.respond /get (ensembl gene|map location|hprd|hgnc|homologene|omim|gene type|unigene|swiss-prot|gene summary|gene position hg19|gene position|taxid) ([0-9]+)/i, (res) ->
+  robot.respond /get (ensembl gene|map location|hprd|hgnc|homologene|omim|gene type|unigene|swiss-prot|gene summary|gene position hg19|gene position|taxid|gene symbol) ([0-9]+)/i, (res) ->
     searchTerm = res.match[1].toLowerCase()
     geneID = res.match[2]
 
