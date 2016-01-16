@@ -4,6 +4,7 @@
 #   hubot get gene symbol <gene ID> - Returns gene symbol for gene ID.
 #   hubot get gene position <gene ID> - Returns genomic position for gene ID. Position in HG19. 
 #   hubot get gene summary <gene ID> - Returns summary of gene
+#   hubot get entrezi gene <gene ID> - Returns Entrez gene ID for gene
 #   hubot get ensembl gene <gene ID> - Returns Ensembl gene ID for gene
 #   hubot get ensembl transcripts <gene ID> - Returns Ensembl transcript IDs for gene
 #   hubot get ensembl proteins <gene ID> - Return Ensembl protein IDs for gene
@@ -155,6 +156,9 @@ getSearchLink = (searchTerm) ->
   if searchTerm == 'gene symbol'
     searchTerm = 'symbol'
     link = (id) -> "#{id}"
+  if searchTerm == 'entrez gene'
+    searchTerm = 'entrezgene'
+    link = (id) -> "#{id}\thttp://www.ncbi.nlm.nih.gov/gene/#{id}"
 
   return [searchTerm, link]
 
@@ -211,7 +215,7 @@ module.exports = (robot) ->
             response += "#{ref.text}+\nhttp://www.ncbi.nlm.nih.gov/pubmed/#{ref.pubmed}\n\n"
           res.send "#{response}"
 
-  robot.respond /get (ensembl gene|map location|hprd|hgnc|homologene|omim|gene type|unigene|swiss-prot|gene summary|gene position hg19|gene position|taxid|gene symbol) ([0-9]+)/i, (res) ->
+  robot.respond /get (ensembl gene|map location|hprd|hgnc|homologene|omim|gene type|unigene|swiss-prot|gene summary|gene position hg19|gene position|taxid|gene symbol|entrez gene) ([0-9]+)/i, (res) ->
     searchTerm = res.match[1].toLowerCase()
     geneID = res.match[2]
 
