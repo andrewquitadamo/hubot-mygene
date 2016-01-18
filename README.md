@@ -18,7 +18,9 @@ Then add **hubot-mygene** to your `external-scripts.json`:
 
 ## Sample Interaction
 ```
-user>> hubot get omom 672
+user>> hubot get gene symbol 672
+hubot>> BRCA1
+user>> hubot get omim 672
 hubot>> 113705    http://www.omim.org/entry/113705
 user>> hubot get map location 672
 hubot>> 17q21
